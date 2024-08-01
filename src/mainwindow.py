@@ -8,6 +8,7 @@ from PyPDF2 import PdfReader, PdfWriter
 import pandas as pd
 from openpyxl import load_workbook
 import os
+
 # CAMINHO DO TEMA
 STR_THEME_PATH = "J:\\Meu Drive\\ProjetoItau\\design\\theme.qss"
 
@@ -21,7 +22,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)  # Configura a UI
 
         # Define o tamanho fixo da janela
-        self.setFixedSize(QSize(390, 400))  # Ajuste os valores conforme necessário
+        self.setFixedSize(QSize(390, 550))  # Ajuste os valores conforme necessário
 
         # Define o título da janela
         self.setWindowTitle("Automação Itaú")
@@ -34,11 +35,14 @@ class MainWindow(QMainWindow):
         self.ui.buscarCaminhoPDF.clicked.connect(self.open_directory_dialog)
         self.ui.separarPDF.clicked.connect(self.separar_pdf)
         self.ui.ConfigurarExcel.clicked.connect(self.configurar_excel)
-
         
         # Conecta os novos botões aos métodos
         self.ui.buscarExcel.clicked.connect(self.open_excel_file_dialog)
         self.ui.buscarCaminhoExcel.clicked.connect(self.save_excel_file_dialog)
+        
+        # Conecta os botões para renomeação de PDFs
+        self.ui.buscarPastaPDF.clicked.connect(self.open_folder_dialog)
+        self.ui.buscarArquivoExcel.clicked.connect(self.open_renaming_excel_file_dialog)
 
         # Setando valor nome do tema que será usado.
         themeFile = STR_THEME_PATH.replace('[THEME_NAME]', STR_THEME_NAME)
@@ -61,17 +65,12 @@ class MainWindow(QMainWindow):
                 self.ui.inputArquivoPDF.setText(selected_files[0])
 
     def open_directory_dialog(self):
-        # Cria uma instância do QFileDialog para seleção de diretórios
-        directory_dialog = QFileDialog(self)
-        directory_dialog.setFileMode(QFileDialog.Directory)  # Seleciona diretórios
-        directory_dialog.setViewMode(QFileDialog.List)
+        # Abre o diálogo de seleção de diretórios
+        directory = QFileDialog.getExistingDirectory(self, "Selecione o diretório para salvar")
 
-        if directory_dialog.exec():
-            # Obtém o caminho do diretório selecionado
-            selected_directories = directory_dialog.selectedFiles()
-            if selected_directories:
-                # Insere o caminho do diretório na QLineEdit
-                self.ui.inputSalvarComoPDF.setText(selected_directories[0])
+        if directory:
+            # Insere o caminho do diretório na QLineEdit
+            self.ui.inputSalvarComoPDF.setText(directory)
 
     def separar_pdf(self):
         # Obtém os caminhos dos arquivos e diretórios
@@ -183,17 +182,39 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.show_message("Erro", f"Erro ao configurar o Excel: {e}")
 
+    def open_folder_dialog(self):
+        # Abre o diálogo de seleção de diretórios
+        directory = QFileDialog.getExistingDirectory(self, "Selecione a pasta de PDFs")
+
+        if directory:
+            # Insere o caminho da pasta na QLineEdit
+            self.ui.inputPastaPDF.setText(directory)
+
+    def open_renaming_excel_file_dialog(self):
+        # Cria uma instância do QFileDialog para seleção de arquivos
+        file_dialog = QFileDialog(self)
+        file_dialog.setFileMode(QFileDialog.ExistingFiles)
+        file_dialog.setNameFilter("Excel Files (*.xlsx *.xls)")
+        file_dialog.setViewMode(QFileDialog.List)
+
+        if file_dialog.exec():
+            selected_files = file_dialog.selectedFiles()
+            if selected_files:
+                # Insere o caminho do arquivo Excel na QLineEdit
+                self.ui.inputExcelRenomear.setText(selected_files[0])
+
     def show_message(self, title, message):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(title)
         msg_box.setText(message)
-        msg_box.setIcon(QMessageBox.Information if title == "Sucesso" else QMessageBox.Critical)
         msg_box.exec()
 
-    def theme(self, file):
-        with open(file, 'r') as f:
-            str_ = f.read()
-        self.setStyleSheet(str_)
+    def theme(self, theme):
+        # Aplicar o tema da folha de estilo
+        with open(theme, "r") as f:
+            style = f.read()
+            self.setStyleSheet(style)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

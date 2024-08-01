@@ -160,6 +160,61 @@ class Ui_Dialog(object):
 
         self.gridLayout_2.addWidget(self.tituloExcel, 0, 0, 1, 3)
 
+        self.gridLayoutWidget_3 = QWidget(Dialog)
+        self.gridLayoutWidget_3.setObjectName(u"gridLayoutWidget_3")
+        self.gridLayoutWidget_3.setGeometry(QRect(10, 390, 371, 141))
+        self.gridLayout_3 = QGridLayout(self.gridLayoutWidget_3)
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.inputPastaPDF = QLineEdit(self.gridLayoutWidget_3)
+        self.inputPastaPDF.setObjectName(u"inputPastaPDF")
+        self.inputPastaPDF.setFont(font)
+
+        self.gridLayout_3.addWidget(self.inputPastaPDF, 1, 1, 1, 1)
+
+        self.pastaPDF = QLabel(self.gridLayoutWidget_3)
+        self.pastaPDF.setObjectName(u"pastaPDF")
+        self.pastaPDF.setFont(font)
+
+        self.gridLayout_3.addWidget(self.pastaPDF, 1, 0, 1, 1)
+
+        self.arquivoExcelRenomear = QLabel(self.gridLayoutWidget_3)
+        self.arquivoExcelRenomear.setObjectName(u"arquivoExcelRenomear")
+        self.arquivoExcelRenomear.setFont(font)
+
+        self.gridLayout_3.addWidget(self.arquivoExcelRenomear, 2, 0, 1, 1)
+
+        self.inputExcelRenomear = QLineEdit(self.gridLayoutWidget_3)
+        self.inputExcelRenomear.setObjectName(u"inputExcelRenomear")
+        self.inputExcelRenomear.setFont(font)
+
+        self.gridLayout_3.addWidget(self.inputExcelRenomear, 2, 1, 1, 1)
+
+        self.buscarPastaPDF = QToolButton(self.gridLayoutWidget_3)
+        self.buscarPastaPDF.setObjectName(u"buscarPastaPDF")
+        self.buscarPastaPDF.setFont(font)
+
+        self.gridLayout_3.addWidget(self.buscarPastaPDF, 1, 2, 1, 1)
+
+        self.RenomearPDF = QPushButton(self.gridLayoutWidget_3)
+        self.RenomearPDF.setObjectName(u"RenomearPDF")
+        self.RenomearPDF.setFont(font1)
+
+        self.gridLayout_3.addWidget(self.RenomearPDF, 3, 1, 1, 1)
+
+        self.buscarArquivoExcel = QToolButton(self.gridLayoutWidget_3)
+        self.buscarArquivoExcel.setObjectName(u"buscarArquivoExcel")
+        self.buscarArquivoExcel.setFont(font)
+
+        self.gridLayout_3.addWidget(self.buscarArquivoExcel, 2, 2, 1, 1)
+
+        self.tituloRenomear = QLabel(self.gridLayoutWidget_3)
+        self.tituloRenomear.setObjectName(u"tituloRenomear")
+        self.tituloRenomear.setFont(font2)
+        self.tituloRenomear.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout_3.addWidget(self.tituloRenomear, 0, 0, 1, 3)
+
 
         self.retranslateUi(Dialog)
 
@@ -183,5 +238,11 @@ class Ui_Dialog(object):
         self.ConfigurarExcel.setText(QCoreApplication.translate("Dialog", u"Configurar Excel", None))
         self.buscarCaminhoExcel.setText(QCoreApplication.translate("Dialog", u"...", None))
         self.tituloExcel.setText(QCoreApplication.translate("Dialog", u"Configurar arquivo Excel", None))
+        self.pastaPDF.setText(QCoreApplication.translate("Dialog", u"Pasta com os PDF:", None))
+        self.arquivoExcelRenomear.setText(QCoreApplication.translate("Dialog", u"Arquivo Excel:", None))
+        self.buscarPastaPDF.setText(QCoreApplication.translate("Dialog", u"...", None))
+        self.RenomearPDF.setText(QCoreApplication.translate("Dialog", u"Renomear PDF", None))
+        self.buscarArquivoExcel.setText(QCoreApplication.translate("Dialog", u"...", None))
+        self.tituloRenomear.setText(QCoreApplication.translate("Dialog", u"Renomear PDF", None))
     # retranslateUi
 
