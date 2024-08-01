@@ -163,6 +163,9 @@ class MainWindow(QMainWindow):
             # Manter apenas os primeiros 6 dígitos na coluna 'Lancamento'
             excel_data['Lancamento'] = excel_data['Lancamento'].astype(str).str[:6]
 
+            # Ordenar a tabela pela coluna 'Liquido' do maior para o menor
+            excel_data = excel_data.sort_values(by='Liquido', ascending=False)
+
             # Salvar o arquivo Excel modificado com um novo nome no caminho especificado
             save_dir = os.path.dirname(save_path)
             save_filename = os.path.basename(save_path)
@@ -179,7 +182,6 @@ class MainWindow(QMainWindow):
 
         except Exception as e:
             self.show_message("Erro", f"Erro ao configurar o Excel: {e}")
-
 
     def show_message(self, title, message):
         msg_box = QMessageBox(self)
