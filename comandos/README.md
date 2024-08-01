@@ -10,6 +10,8 @@ pip install pyside6
 pip install pillow
 pip install pyinstaller
 pip install PyMuPDF
+pip install PyPDF2
+
 
 # Iniciando meu git
 git init

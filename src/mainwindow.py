@@ -1,11 +1,11 @@
+# type: ignore
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from window import Ui_Dialog  # Importa a classe Ui_Dialog gerada do arquivo window.py
-import fitz  # PyMuPDF
 
-# Caminho do tema
+# CAMINHO DO TEMA
 STR_THEME_PATH = "J:\\Meu Drive\\ProjetoItau\\design\\theme.qss"
 
 # Combinear, Darkeum, Fibers, Fibrary, Genetive, Wstartpage
@@ -18,21 +18,18 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)  # Configura a UI
 
         # Define o tamanho fixo da janela
-        self.setFixedSize(QSize(360, 120))  # Ajuste os valores conforme necessário
-        
+        self.setFixedSize(QSize(390, 220))  # Ajuste os valores conforme necessário
+
         # Define o título da janela
         self.setWindowTitle("Automação Itaú")
-        
+
         # Define um ícone para a janela
         self.setWindowIcon(QIcon("J:\\Meu Drive\\ProjetoItau\\Fotos\\LogoItau.png"))  # Substitua pelo caminho do seu ícone
-
-        # Configura o widget central
-        self.setCentralWidget(self.ui.gridLayoutWidget)
 
         # Conecta os sinais de clique dos botões aos métodos correspondentes
         self.ui.buscarPDF.clicked.connect(self.open_file_dialog)
         self.ui.buscarCaminhoPDF.clicked.connect(self.open_directory_dialog)
-        self.ui.separarPDF.clicked.connect(self.separate_pdf)  # Adiciona a conexão para o botão separarPDF
+        self.ui.separarPDF.clicked.connect(self.separar_pdf)
 
         # Setando valor nome do tema que será usado.
         themeFile = STR_THEME_PATH.replace('[THEME_NAME]', STR_THEME_NAME)
@@ -43,9 +40,9 @@ class MainWindow(QMainWindow):
     def open_file_dialog(self):
         # Cria uma instância do QFileDialog para seleção de arquivos
         file_dialog = QFileDialog(self)
-        file_dialog.setFileMode(QFileDialog.ExistingFiles) # type: ignore
+        file_dialog.setFileMode(QFileDialog.ExistingFiles)  # Seleciona arquivos existentes
         file_dialog.setNameFilter("PDF Files (*.pdf)")
-        file_dialog.setViewMode(QFileDialog.List) # type: ignore
+        file_dialog.setViewMode(QFileDialog.List)
 
         if file_dialog.exec():
             # Obtém o caminho do arquivo selecionado
@@ -57,9 +54,8 @@ class MainWindow(QMainWindow):
     def open_directory_dialog(self):
         # Cria uma instância do QFileDialog para seleção de diretórios
         directory_dialog = QFileDialog(self)
-        directory_dialog.setFileMode(QFileDialog.Directory) # type: ignore
-        # directory_dialog.setOption(QFileDialog.DontUseNativeDialog)  # Opcional, se preferir um diálogo Qt nativo
-        directory_dialog.setViewMode(QFileDialog.List) # type: ignore 
+        directory_dialog.setFileMode(QFileDialog.Directory)  # Seleciona diretórios
+        directory_dialog.setViewMode(QFileDialog.List)
 
         if directory_dialog.exec():
             # Obtém o caminho do diretório selecionado
@@ -68,42 +64,47 @@ class MainWindow(QMainWindow):
                 # Insere o caminho do diretório na QLineEdit
                 self.ui.inputSalvarComoPDF.setText(selected_directories[0])
 
-    def separate_pdf(self):
-        # Obtém o caminho do arquivo PDF e o diretório de destino
+    def separar_pdf(self):
+        # Obtém os caminhos dos arquivos e diretórios
         pdf_path = self.ui.inputArquivoPDF.text()
         output_dir = self.ui.inputSalvarComoPDF.text()
 
         if not pdf_path or not output_dir:
-            QMessageBox.warning(self, "Aviso", "Por favor, selecione o arquivo PDF e o diretório de destino.")
+            self.show_message("Erro", "Por favor, selecione um arquivo PDF e um diretório para salvar.")
             return
 
+        from PyPDF2 import PdfReader, PdfWriter
+        import os
+
         try:
-            # Abre o arquivo PDF
-            pdf_document = fitz.open(pdf_path)
-            num_pages = pdf_document.page_count
+            reader = PdfReader(pdf_path)
+            num_pages = len(reader.pages)
 
             for page_num in range(num_pages):
-                # Cria um novo documento PDF para cada página
-                pdf_writer = fitz.open()
-                page = pdf_document.load_page(page_num)
-                pdf_writer.insert_pdf(pdf_document, from_page=page_num, to_page=page_num)
+                writer = PdfWriter()
+                writer.add_page(reader.pages[page_num])
+                output_file = os.path.join(output_dir, f"Comprovante_{page_num + 1}.pdf")
 
-                # Define o nome do arquivo de saída com o formato desejado
-                output_filename = f"{output_dir}/Comprovante_{page_num + 1}.pdf"
-                pdf_writer.save(output_filename)
-                pdf_writer.close()
+                with open(output_file, 'wb') as out_file:
+                    writer.write(out_file)
 
-            pdf_document.close()
-
-            # Mensagem de sucesso
-            QMessageBox.information(self, "Sucesso", "PDF separado com sucesso!")
-
-            # Limpa os campos das QLineEdits
+            # Limpa os campos das LineEdits após o sucesso
             self.ui.inputArquivoPDF.clear()
             self.ui.inputSalvarComoPDF.clear()
 
+            # Mostra mensagem de sucesso
+            self.show_message("Sucesso", "O PDF foi separado com sucesso.")
+
         except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao separar o PDF: {e}")
+            # Mostra mensagem de erro
+            self.show_message("Erro", f"Erro ao separar o PDF: {e}")
+
+    def show_message(self, title, message):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.setIcon(QMessageBox.Information if title == "Sucesso" else QMessageBox.Critical)
+        msg_box.exec()
 
     def theme(self, file):
         with open(file, 'r') as f:
