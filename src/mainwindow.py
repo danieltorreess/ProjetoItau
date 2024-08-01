@@ -43,6 +43,7 @@ class MainWindow(QMainWindow):
         # Conecta os botões para renomeação de PDFs
         self.ui.buscarPastaPDF.clicked.connect(self.open_folder_dialog)
         self.ui.buscarArquivoExcel.clicked.connect(self.open_renaming_excel_file_dialog)
+        self.ui.RenomearPDF.clicked.connect(self.renomear_pdfs)
 
         # Setando valor nome do tema que será usado.
         themeFile = STR_THEME_PATH.replace('[THEME_NAME]', STR_THEME_NAME)
@@ -202,6 +203,57 @@ class MainWindow(QMainWindow):
             if selected_files:
                 # Insere o caminho do arquivo Excel na QLineEdit
                 self.ui.inputExcelRenomear.setText(selected_files[0])
+
+    def renomear_pdfs(self):
+        # Obter os caminhos dos arquivos e diretórios
+        pasta_pdfs = self.ui.inputPastaPDF.text()
+        excel_path = self.ui.inputExcelRenomear.text()
+
+        if not pasta_pdfs or not excel_path:
+            self.show_message("Erro", "Por favor, selecione a pasta com os PDFs e o arquivo Excel.")
+            return
+
+        try:
+            # Ler o arquivo Excel
+            df = pd.read_excel(excel_path, usecols=['Credor'])
+
+            # Obter a lista de arquivos PDF na pasta
+            pdf_files = [f for f in os.listdir(pasta_pdfs) if f.lower().endswith('.pdf')]
+
+            # Obter os valores da coluna "Credor"
+            credores = df['Credor'].dropna().tolist()
+
+            if not pdf_files:
+                self.show_message("Erro", "Nenhum arquivo PDF encontrado na pasta especificada.")
+                return
+
+            if not credores:
+                self.show_message("Erro", "Nenhum valor encontrado na coluna 'Credor'.")
+                return
+
+            # Renomear os arquivos PDF
+            for i, pdf_file in enumerate(pdf_files):
+                if i < len(credores):
+                    # Separar o nome e a extensão do arquivo
+                    base, ext = os.path.splitext(pdf_file)
+                    
+                    # Manter o sufixo numérico
+                    sufixo = base.split('_')[-1] if '_' in base else ''
+                    
+                    novo_nome = f"{credores[i]}{sufixo}{ext}"
+                    caminho_antigo = os.path.join(pasta_pdfs, pdf_file)
+                    caminho_novo = os.path.join(pasta_pdfs, novo_nome)
+                    os.rename(caminho_antigo, caminho_novo)
+                else:
+                    break
+
+            # Mostrar mensagem de sucesso
+            self.show_message("Sucesso", "Os arquivos PDF foram renomeados com sucesso.")
+
+        except Exception as e:
+            # Mostrar mensagem de erro
+            self.show_message("Erro", f"Erro ao renomear os PDFs: {e}")
+
 
     def show_message(self, title, message):
         msg_box = QMessageBox(self)
