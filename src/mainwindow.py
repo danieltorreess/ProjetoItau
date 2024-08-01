@@ -1,19 +1,12 @@
 # type: ignore
-import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+import os
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from window import Ui_Dialog  # Importa a classe Ui_Dialog gerada do arquivo window.py
-from PyPDF2 import PdfReader, PdfWriter
 import pandas as pd
-from openpyxl import load_workbook
-import os
-
-# CAMINHO DO TEMA
-STR_THEME_PATH = "J:\\Meu Drive\\ProjetoItau\\design\\theme.qss"
-
-# Combinear, Darkeum, Fibers, Fibrary, Genetive, Wstartpage
-STR_THEME_NAME = 'Combinear'
+from PyPDF2 import PdfReader, PdfWriter
+from utils import show_message, theme
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -34,22 +27,24 @@ class MainWindow(QMainWindow):
         self.ui.buscarPDF.clicked.connect(self.open_file_dialog)
         self.ui.buscarCaminhoPDF.clicked.connect(self.open_directory_dialog)
         self.ui.separarPDF.clicked.connect(self.separar_pdf)
-        self.ui.ConfigurarExcel.clicked.connect(self.configurar_excel)
         
-        # Conecta os novos botões aos métodos
+        # Conecta os botões para configurar Excel
         self.ui.buscarExcel.clicked.connect(self.open_excel_file_dialog)
         self.ui.buscarCaminhoExcel.clicked.connect(self.save_excel_file_dialog)
-        
+        self.ui.ConfigurarExcel.clicked.connect(self.configurar_excel)
+
         # Conecta os botões para renomeação de PDFs
         self.ui.buscarPastaPDF.clicked.connect(self.open_folder_dialog)
         self.ui.buscarArquivoExcel.clicked.connect(self.open_renaming_excel_file_dialog)
         self.ui.RenomearPDF.clicked.connect(self.renomear_pdfs)
 
         # Setando valor nome do tema que será usado.
-        themeFile = STR_THEME_PATH.replace('[THEME_NAME]', STR_THEME_NAME)
+        STR_THEME_PATH = "J:\\Meu Drive\\ProjetoItau\\design\\theme.qss"
+        STR_THEME_NAME = 'Combinear'
+        theme_file = STR_THEME_PATH.replace('[THEME_NAME]', STR_THEME_NAME)
 
         # Setando estilo do tema.
-        self.theme(themeFile)
+        theme(self, theme_file)
 
     def open_file_dialog(self):
         # Cria uma instância do QFileDialog para seleção de arquivos
@@ -79,7 +74,7 @@ class MainWindow(QMainWindow):
         output_dir = self.ui.inputSalvarComoPDF.text()
 
         if not pdf_path or not output_dir:
-            self.show_message("Erro", "Por favor, selecione um arquivo PDF e um diretório para salvar.")
+            show_message(self, "Erro", "Por favor, selecione um arquivo PDF e um diretório para salvar.")
             return
 
         try:
@@ -99,11 +94,11 @@ class MainWindow(QMainWindow):
             self.ui.inputSalvarComoPDF.clear()
 
             # Mostra mensagem de sucesso
-            self.show_message("Sucesso", "O PDF foi separado com sucesso.")
+            show_message(self, "Sucesso", "O PDF foi separado com sucesso.")
 
         except Exception as e:
             # Mostra mensagem de erro
-            self.show_message("Erro", f"Erro ao separar o PDF: {e}")
+            show_message(self, "Erro", f"Erro ao separar o PDF: {e}")
 
     def open_excel_file_dialog(self):
         # Cria uma instância do QFileDialog para seleção de arquivos
@@ -139,18 +134,12 @@ class MainWindow(QMainWindow):
         save_path = self.ui.inputSalvarComoExcel.text()
 
         if not excel_path or not save_path:
-            self.show_message("Erro", "Por favor, selecione um arquivo Excel e um caminho para salvar.")
+            show_message(self, "Erro", "Por favor, selecione um arquivo Excel e um caminho para salvar.")
             return
 
         try:
             # Abrir o arquivo Excel
             excel_data = pd.read_excel(excel_path, sheet_name='Relatório', header=10)
-
-            # Mostrar as primeiras linhas do DataFrame e as colunas disponíveis
-            # print("Primeiras linhas do DataFrame:")
-            # print(excel_data.head())
-            # print("Colunas disponíveis:")
-            # print(excel_data.columns)
 
             # Manter apenas as colunas necessárias e renomeá-las
             cols_to_keep = ['Credor', 'Lançamento', 'Líquido']
@@ -178,10 +167,10 @@ class MainWindow(QMainWindow):
             self.ui.inputSalvarComoExcel.clear()
 
             # Mostrar mensagem de sucesso
-            self.show_message("Sucesso", f"O arquivo Excel foi configurado com sucesso e salvo em: {new_save_path}")
+            show_message(self, "Sucesso", f"O arquivo Excel foi configurado com sucesso e salvo em: {new_save_path}")
 
         except Exception as e:
-            self.show_message("Erro", f"Erro ao configurar o Excel: {e}")
+            show_message(self, "Erro", f"Erro ao configurar o Excel: {e}")
 
     def open_folder_dialog(self):
         # Abre o diálogo de seleção de diretórios
@@ -210,7 +199,7 @@ class MainWindow(QMainWindow):
         excel_path = self.ui.inputExcelRenomear.text()
 
         if not pasta_pdfs or not excel_path:
-            self.show_message("Erro", "Por favor, selecione a pasta com os PDFs e o arquivo Excel.")
+            show_message(self, "Erro", "Por favor, selecione a pasta com os PDFs e o arquivo Excel.")
             return
 
         try:
@@ -224,11 +213,11 @@ class MainWindow(QMainWindow):
             credores = df['Credor'].dropna().tolist()
 
             if not pdf_files:
-                self.show_message("Erro", "Nenhum arquivo PDF encontrado na pasta especificada.")
+                show_message(self, "Erro", "Nenhum arquivo PDF encontrado na pasta especificada.")
                 return
 
             if not credores:
-                self.show_message("Erro", "Nenhum valor encontrado na coluna 'Credor'.")
+                show_message(self, "Erro", "Nenhum valor encontrado na coluna 'Credor'.")
                 return
 
             # Renomear os arquivos PDF
@@ -248,28 +237,8 @@ class MainWindow(QMainWindow):
                     break
 
             # Mostrar mensagem de sucesso
-            self.show_message("Sucesso", "Os arquivos PDF foram renomeados com sucesso.")
+            show_message(self, "Sucesso", "Os arquivos PDF foram renomeados com sucesso.")
 
         except Exception as e:
             # Mostrar mensagem de erro
-            self.show_message("Erro", f"Erro ao renomear os PDFs: {e}")
-
-
-    def show_message(self, title, message):
-        msg_box = QMessageBox(self)
-        msg_box.setWindowTitle(title)
-        msg_box.setText(message)
-        msg_box.exec()
-
-    def theme(self, theme):
-        # Aplicar o tema da folha de estilo
-        with open(theme, "r") as f:
-            style = f.read()
-            self.setStyleSheet(style)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+            show_message(self, "Erro", f"Erro ao renomear os PDFs: {e}")
