@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)  # Configura a UI
 
         # Define o tamanho fixo da janela
-        self.setFixedSize(QSize(390, 220))  # Ajuste os valores conforme necessário
+        self.setFixedSize(QSize(390, 400))  # Ajuste os valores conforme necessário
 
         # Define o título da janela
         self.setWindowTitle("Automação Itaú")
@@ -30,6 +30,10 @@ class MainWindow(QMainWindow):
         self.ui.buscarPDF.clicked.connect(self.open_file_dialog)
         self.ui.buscarCaminhoPDF.clicked.connect(self.open_directory_dialog)
         self.ui.separarPDF.clicked.connect(self.separar_pdf)
+        
+        # Conecta os novos botões aos métodos
+        self.ui.buscarExcel.clicked.connect(self.open_excel_file_dialog)
+        self.ui.buscarCaminhoExcel.clicked.connect(self.save_excel_file_dialog)
 
         # Setando valor nome do tema que será usado.
         themeFile = STR_THEME_PATH.replace('[THEME_NAME]', STR_THEME_NAME)
@@ -98,6 +102,35 @@ class MainWindow(QMainWindow):
         except Exception as e:
             # Mostra mensagem de erro
             self.show_message("Erro", f"Erro ao separar o PDF: {e}")
+
+    def open_excel_file_dialog(self):
+        # Cria uma instância do QFileDialog para seleção de arquivos
+        file_dialog = QFileDialog(self)
+        file_dialog.setFileMode(QFileDialog.ExistingFiles)  # Seleciona arquivos existentes
+        file_dialog.setNameFilter("Excel Files (*.xlsx *.xls)")
+        file_dialog.setViewMode(QFileDialog.List)
+
+        if file_dialog.exec():
+            # Obtém o caminho do arquivo selecionado
+            selected_files = file_dialog.selectedFiles()
+            if selected_files:
+                # Insere o caminho do arquivo na QLineEdit
+                self.ui.inputArquivoExcel.setText(selected_files[0])
+
+    def save_excel_file_dialog(self):
+        # Cria uma instância do QFileDialog para salvar arquivos
+        file_dialog = QFileDialog(self)
+        file_dialog.setFileMode(QFileDialog.AnyFile)  # Seleciona qualquer arquivo
+        file_dialog.setNameFilter("Excel Files (*.xlsx *.xls)")
+        file_dialog.setViewMode(QFileDialog.List)
+        file_dialog.setDefaultSuffix('xlsx')
+
+        if file_dialog.exec():
+            # Obtém o caminho do arquivo selecionado
+            selected_files = file_dialog.selectedFiles()
+            if selected_files:
+                # Insere o caminho do arquivo na QLineEdit
+                self.ui.inputSalvarComoExcel.setText(selected_files[0])
 
     def show_message(self, title, message):
         msg_box = QMessageBox(self)

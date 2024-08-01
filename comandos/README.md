@@ -11,7 +11,8 @@ pip install pillow
 pip install pyinstaller
 pip install PyMuPDF
 pip install PyPDF2
-
+pip install pandas
+pip install openpyxl
 
 # Iniciando meu git
 git init

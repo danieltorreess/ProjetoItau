@@ -23,7 +23,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(434, 336)
+        Dialog.resize(392, 591)
         self.gridLayoutWidget = QWidget(Dialog)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
         self.gridLayoutWidget.setGeometry(QRect(10, 70, 371, 141))
@@ -105,6 +105,61 @@ class Ui_Dialog(object):
         self.LogoMV.setGeometry(QRect(330, 20, 51, 41))
         self.LogoMV.setPixmap(QPixmap(u"../Fotos/LogoMV.png"))
         self.LogoMV.setScaledContents(True)
+        self.gridLayoutWidget_2 = QWidget(Dialog)
+        self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
+        self.gridLayoutWidget_2.setGeometry(QRect(10, 230, 371, 141))
+        self.gridLayout_2 = QGridLayout(self.gridLayoutWidget_2)
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.inputArquivoExcel = QLineEdit(self.gridLayoutWidget_2)
+        self.inputArquivoExcel.setObjectName(u"inputArquivoExcel")
+        self.inputArquivoExcel.setFont(font)
+
+        self.gridLayout_2.addWidget(self.inputArquivoExcel, 1, 1, 1, 1)
+
+        self.arquivoExcel = QLabel(self.gridLayoutWidget_2)
+        self.arquivoExcel.setObjectName(u"arquivoExcel")
+        self.arquivoExcel.setFont(font)
+
+        self.gridLayout_2.addWidget(self.arquivoExcel, 1, 0, 1, 1)
+
+        self.salvarComoExcel = QLabel(self.gridLayoutWidget_2)
+        self.salvarComoExcel.setObjectName(u"salvarComoExcel")
+        self.salvarComoExcel.setFont(font)
+
+        self.gridLayout_2.addWidget(self.salvarComoExcel, 2, 0, 1, 1)
+
+        self.inputSalvarComoExcel = QLineEdit(self.gridLayoutWidget_2)
+        self.inputSalvarComoExcel.setObjectName(u"inputSalvarComoExcel")
+        self.inputSalvarComoExcel.setFont(font)
+
+        self.gridLayout_2.addWidget(self.inputSalvarComoExcel, 2, 1, 1, 1)
+
+        self.buscarExcel = QToolButton(self.gridLayoutWidget_2)
+        self.buscarExcel.setObjectName(u"buscarExcel")
+        self.buscarExcel.setFont(font)
+
+        self.gridLayout_2.addWidget(self.buscarExcel, 1, 2, 1, 1)
+
+        self.ConfigurarExcel = QPushButton(self.gridLayoutWidget_2)
+        self.ConfigurarExcel.setObjectName(u"ConfigurarExcel")
+        self.ConfigurarExcel.setFont(font1)
+
+        self.gridLayout_2.addWidget(self.ConfigurarExcel, 3, 1, 1, 1)
+
+        self.buscarCaminhoExcel = QToolButton(self.gridLayoutWidget_2)
+        self.buscarCaminhoExcel.setObjectName(u"buscarCaminhoExcel")
+        self.buscarCaminhoExcel.setFont(font)
+
+        self.gridLayout_2.addWidget(self.buscarCaminhoExcel, 2, 2, 1, 1)
+
+        self.tituloExcel = QLabel(self.gridLayoutWidget_2)
+        self.tituloExcel.setObjectName(u"tituloExcel")
+        self.tituloExcel.setFont(font2)
+        self.tituloExcel.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout_2.addWidget(self.tituloExcel, 0, 0, 1, 3)
+
 
         self.retranslateUi(Dialog)
 
@@ -122,5 +177,11 @@ class Ui_Dialog(object):
         self.TituloPrincipal.setText(QCoreApplication.translate("Dialog", u"Automa\u00e7\u00e3o comprovantes Ita\u00fa", None))
         self.LogoItau.setText("")
         self.LogoMV.setText("")
+        self.arquivoExcel.setText(QCoreApplication.translate("Dialog", u"Arquivo Excel:", None))
+        self.salvarComoExcel.setText(QCoreApplication.translate("Dialog", u"Salvar como:", None))
+        self.buscarExcel.setText(QCoreApplication.translate("Dialog", u"...", None))
+        self.ConfigurarExcel.setText(QCoreApplication.translate("Dialog", u"Configurar Excel", None))
+        self.buscarCaminhoExcel.setText(QCoreApplication.translate("Dialog", u"...", None))
+        self.tituloExcel.setText(QCoreApplication.translate("Dialog", u"Configurar arquivo Excel", None))
     # retranslateUi
 
