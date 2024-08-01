@@ -4,7 +4,10 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBo
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from window import Ui_Dialog  # Importa a classe Ui_Dialog gerada do arquivo window.py
-
+from PyPDF2 import PdfReader, PdfWriter
+import pandas as pd
+from openpyxl import load_workbook
+import os
 # CAMINHO DO TEMA
 STR_THEME_PATH = "J:\\Meu Drive\\ProjetoItau\\design\\theme.qss"
 
@@ -30,6 +33,8 @@ class MainWindow(QMainWindow):
         self.ui.buscarPDF.clicked.connect(self.open_file_dialog)
         self.ui.buscarCaminhoPDF.clicked.connect(self.open_directory_dialog)
         self.ui.separarPDF.clicked.connect(self.separar_pdf)
+        self.ui.ConfigurarExcel.clicked.connect(self.configurar_excel)
+
         
         # Conecta os novos botões aos métodos
         self.ui.buscarExcel.clicked.connect(self.open_excel_file_dialog)
@@ -76,9 +81,6 @@ class MainWindow(QMainWindow):
         if not pdf_path or not output_dir:
             self.show_message("Erro", "Por favor, selecione um arquivo PDF e um diretório para salvar.")
             return
-
-        from PyPDF2 import PdfReader, PdfWriter
-        import os
 
         try:
             reader = PdfReader(pdf_path)
@@ -131,6 +133,53 @@ class MainWindow(QMainWindow):
             if selected_files:
                 # Insere o caminho do arquivo na QLineEdit
                 self.ui.inputSalvarComoExcel.setText(selected_files[0])
+
+    def configurar_excel(self):
+        excel_path = self.ui.inputArquivoExcel.text()
+        save_path = self.ui.inputSalvarComoExcel.text()
+
+        if not excel_path or not save_path:
+            self.show_message("Erro", "Por favor, selecione um arquivo Excel e um caminho para salvar.")
+            return
+
+        try:
+            # Abrir o arquivo Excel
+            excel_data = pd.read_excel(excel_path, sheet_name='Relatório', header=10)
+
+            # Mostrar as primeiras linhas do DataFrame e as colunas disponíveis
+            # print("Primeiras linhas do DataFrame:")
+            # print(excel_data.head())
+            # print("Colunas disponíveis:")
+            # print(excel_data.columns)
+
+            # Manter apenas as colunas necessárias e renomeá-las
+            cols_to_keep = ['Credor', 'Lançamento', 'Líquido']
+            excel_data = excel_data[cols_to_keep]
+            excel_data.columns = ['Credor', 'Lancamento', 'Liquido']
+
+            # Remover valores vazios da coluna 'Lancamento'
+            excel_data = excel_data.dropna(subset=['Lancamento'])
+
+            # Manter apenas os primeiros 6 dígitos na coluna 'Lancamento'
+            excel_data['Lancamento'] = excel_data['Lancamento'].astype(str).str[:6]
+
+            # Salvar o arquivo Excel modificado com um novo nome no caminho especificado
+            save_dir = os.path.dirname(save_path)
+            save_filename = os.path.basename(save_path)
+            save_filename = save_filename if save_filename.endswith('.xlsx') else save_filename + '.xlsx'
+            new_save_path = os.path.join(save_dir, save_filename)
+            excel_data.to_excel(new_save_path, index=False)
+
+            # Limpar os campos das LineEdits após o sucesso
+            self.ui.inputArquivoExcel.clear()
+            self.ui.inputSalvarComoExcel.clear()
+
+            # Mostrar mensagem de sucesso
+            self.show_message("Sucesso", f"O arquivo Excel foi configurado com sucesso e salvo em: {new_save_path}")
+
+        except Exception as e:
+            self.show_message("Erro", f"Erro ao configurar o Excel: {e}")
+
 
     def show_message(self, title, message):
         msg_box = QMessageBox(self)
