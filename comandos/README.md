@@ -9,6 +9,7 @@ pip install pyqt6
 pip install pyside6
 pip install pillow
 pip install pyinstaller
+pip install PyMuPDF
 
 # Iniciando meu git
 git init
